@@ -20,18 +20,20 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare("DELETE FROM tasks WHERE id = ?");
-    $stmt->execute([$id]);
+    // Check if task exists
+    $checkStmt = $pdo->prepare("SELECT id FROM tasks WHERE id = ?");
+    $checkStmt->execute([$id]);
 
-
-    //if no rows affected, task not found
-    if ($stmt->rowCount() === 0) {
+    if ($checkStmt->rowCount() === 0) {
         echo json_encode([
             'status' => 'error',
             'message' => 'Task not found'
         ]);
         exit;
     }
+
+    $stmt = $pdo->prepare("DELETE FROM tasks WHERE id = ?");
+    $stmt->execute([$id]);
 
     echo json_encode([
         'status' => 'success',

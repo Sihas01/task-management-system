@@ -6,30 +6,21 @@ require '../config/db.php';
 
 try{
 
-
-    //take data from POST request
+    //take id and status from POST request
     $id = isset($_POST['id']) ? trim($_POST['id']) : '';
-    $title = isset($_POST['title']) ? trim($_POST['title']) : '';
-    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
     $status = isset($_POST['status']) ? trim($_POST['status']) : '';
 
-
     //validate data
-    $errors = [];
+    $errors = [];   
+
     if (empty($id)) {
         $errors[] = 'Task ID is required';
     }
 
-    if (empty($title)) {
-        $errors[] = 'Title is required';
-    }
-
-    if (empty($description)) {
-        $errors[] = 'Description is required';
-    }
-
     if (empty($status)) {
         $errors[] = 'Status is required';
+    }elseif ($status !== 'Pending' && $status !== 'Completed' && $status !== 'In Progress'){ //validating status value
+        $errors[] = 'Invalid status value';
     }
 
     if (!empty($errors)) {
@@ -49,18 +40,20 @@ try{
         exit;
     }
 
-    $query = "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?";
+
+    $query = "UPDATE tasks SET status = ? WHERE id = ?";
     $stmt = $pdo->prepare($query);
-    $stmt->execute([$title, $description, $status, $id]);
+    $stmt->execute([$status, $id]);
+
 
     echo json_encode([
         'status' => 'success',
-        'message' => 'Task updated successfully'
+        'message' => 'Task status updated successfully'
     ]);
 
 }catch (PDOException $e) {
     //datanase error handling
-
+    
     echo json_encode([
         'status' => 'error',
         'message' => 'Database error: ' . $e->getMessage()
@@ -73,5 +66,7 @@ try{
         'status' => 'error',
         'message' => 'Error: ' . $e->getMessage()
     ]);
-    
+
 }
+
+?>

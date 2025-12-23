@@ -1,18 +1,13 @@
-<?php
+<?php 
 
 header('Content-Type: application/json');
 
 require '../config/db.php';
 
-try{
+try {
 
-
-    //take data from POST request
+    //take task id 
     $id = isset($_POST['id']) ? trim($_POST['id']) : '';
-    $title = isset($_POST['title']) ? trim($_POST['title']) : '';
-    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
-    $status = isset($_POST['status']) ? trim($_POST['status']) : '';
-
 
     //validate data
     $errors = [];
@@ -20,26 +15,14 @@ try{
         $errors[] = 'Task ID is required';
     }
 
-    if (empty($title)) {
-        $errors[] = 'Title is required';
-    }
-
-    if (empty($description)) {
-        $errors[] = 'Description is required';
-    }
-
-    if (empty($status)) {
-        $errors[] = 'Status is required';
-    }
-
     if (!empty($errors)) {
         echo json_encode(['status'=>'error','errors'=>$errors]);
         exit;
     }
 
-    $query = "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$title, $description, $status, $id]);
+    $stmt = $pdo->prepare("DELETE FROM tasks WHERE id = ?");
+    $stmt->execute([$id]);
+
 
     //if no rows affected, task not found
     if ($stmt->rowCount() === 0) {
@@ -52,8 +35,9 @@ try{
 
     echo json_encode([
         'status' => 'success',
-        'message' => 'Task updated successfully'
+        'message' => 'Task deleted successfully'
     ]);
+
 
 }catch (PDOException $e) {
     //datanase error handling
@@ -70,5 +54,7 @@ try{
         'status' => 'error',
         'message' => 'Error: ' . $e->getMessage()
     ]);
-    
-}
+
+}   
+
+?>

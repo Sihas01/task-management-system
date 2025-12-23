@@ -62,6 +62,13 @@ async function createTask() {
     const titleInput = document.getElementById('title');
     const descriptionInput = document.getElementById('description');
 
+
+    //validate before submitting
+    if (titleInput.value.trim() === '' || descriptionInput.value.trim() === '') {
+        alert('Please fill in both the title and description.');
+        return;
+    }
+
     const formData = new FormData();
     formData.append('title', titleInput.value);
     formData.append('description', descriptionInput.value);
@@ -112,7 +119,7 @@ async function deleteTask(taskId) {
 
         if (result.status === 'success') {
             alert('Task deleted successfully!');
-            await loadTasks(); // refresh table
+            await loadTasks();
         } else {
             alert(result.message || 'Error deleting task');
         }
@@ -150,6 +157,11 @@ async function submitEditTask() {
     const title = document.getElementById('edit-task-title').value;
     const description = document.getElementById('edit-task-desc').value;
     const status = document.getElementById('edit-task-status').value;
+
+    if (title.trim() === '' || description.trim() === '' || status.trim() === '') {
+        alert('Please fill in the title, description, and status.');
+        return; 
+    }
 
     const formData = new FormData();
     formData.append('id', id);
